@@ -10,11 +10,47 @@ import java.util.*;
  * @author Thomas
  */
 public class EntityManager extends Thread{
-    ArrayList<Player> players;
-    Outputter out;
-    
-    public void addPlayer(String info) {
-        
+    ArrayList<Player> players = new ArrayList<Player>();
+    int currentID = 0;
+
+    public AddPlayer addPlayer(String name) {
+        AddPlayer add = new AddPlayer();
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
+            if (p.name.equals(name)) {
+                add.success = false;
+                add.id = 0;
+                return add;
+            }
+        }
+        add.id = currentID;
+        add.success = true;
+        Player p = new Player(currentID++, name);
+        players.add(p);
+        Constants.output.add(p.send());
+        return add;
+    }
+
+    public void remove(int id) {
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
+            if (p.ID == id) {
+                players.remove(p);
+                break;
+            }
+        }
+    }
+
+    public void move(int id, float x, float y) {
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
+            if (p.ID == id) {
+                p.velocityX = x;
+                p.velocityY = y;
+                break;
+            }
+        }
+        Constants.output.add("move" + "," + id + "," + x + "," + y);
     }
     
     long lastTime = System.currentTimeMillis();
@@ -24,9 +60,15 @@ public class EntityManager extends Thread{
             long time = System.currentTimeMillis();
             long elapsed = time - lastTime;
             lastTime = time;
-            for (Player p : players) {
-                if (p.update(elapsed)) out.add(p.send());
+            for (int i = 0; i < players.size(); i++) {
+                try {
+                    Player p = players.get(i);
+                    if (p.update(elapsed)) Constants.output.add(p.send());
+                } catch(Exception exc) {}
             }
+            try {
+                sleep(100);
+            } catch(Exception exc) {}
         }
     }
 }

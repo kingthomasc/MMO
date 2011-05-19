@@ -12,4 +12,8 @@ public class Constants {
     public final static String PLAYER = "play";
     public final static String ENEMY = "enem";
     public final static String CHAT = "chat";
+    public final static String MOVE = "move";
+
+    public static Outputter output = new Outputter();
+    public static EntityManager manager = new EntityManager();
 }
